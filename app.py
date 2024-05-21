@@ -18,14 +18,14 @@ def token_obrigatorio(f):
             return jsonify({'mensagem': 'Token não foi incluído!'}, 401)
         # Se temos um token, validar acesso consultando o BD
         try:
-            resultado = jwt.decode(token,app.config['SECRET_KEY'],algorithms=["HS256"])
+            resultado = jwt.decode(
+                token, app.config['SECRET_KEY'], algorithms=["HS256"])
             autor = Autor.query.filter_by(
                 id_autor=resultado['id_autor']).first()
         except:
             return jsonify({'mensagem': 'Token é inválido'}, 401)
         return f(autor, *args, **kwargs)
     return decorated
-
 
 
 @app.route('/login')
@@ -39,7 +39,7 @@ def login():
     if auth.password == usuario.senha:
         token = jwt.encode({'id_autor': usuario.id_autor, 'exp': datetime.utcnow(
         ) + timedelta(minutes=30)}, app.config['SECRET_KEY'])
-        return jsonify({'token':token})
+        return jsonify({'token': token})
     return make_response('Login inválido', 401, {'WWW-Authenticate': 'Basic realm="Login obrigatório"'})
 
 
